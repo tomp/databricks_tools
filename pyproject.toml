@@ -1,0 +1,21 @@
+[project]
+name = "data-governance"
+version = "0.1.0"
+description = "Monitor the state of our data on Databricks"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "pandas",
+    # "msk_cdm @ file:///Users/pollardw/projects/msk_cdm",
+    "databricks-sql-connector>=3.7.2",
+    "python-dotenv>=1.2.2",
+]
+
+[dependency-groups]
+dev = [
+    "marimo>=0.22.0",
+    "openai>=2.30.0",
+    "python-lsp-ruff>=2.3.1",
+    "python-lsp-server>=1.14.0",
+    "websockets>=16.0",
+]
