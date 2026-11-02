@@ -6,6 +6,7 @@ die () { echo "FATAL: $*"; exit 1; }
 CMD_LIST="list"
 CMD_META="meta"
 CMD_COLS="cols"
+CMD_HELP="help"
 
 CATALOG=""
 SCHEMA=""
@@ -20,12 +21,16 @@ Options:
   -c|--catalog CATALOG .. the catalog to use
   -t|--table TABLE ...... consider only this table
   --dryrun .............. don't actually write any files
-  -h|--help ............. print this summary
+  -h|--help ............. show this summary
 
 Commands:
   list .... list the tables in the specified catalog and schema (default)
   meta .... write a JSON file containg the full metadata for each table
   cols .... write a file for each table, listing its column names
+  help .... show this summary
+
+If no catalog is specified, the accessible catalogs are listed.
+If no schema is specified, the accessible schemas in the chosen catalog are listed.
 
 END
     [[ -n $* ]] && exit 1
@@ -76,17 +81,17 @@ then
         CATALOG="${PARTS[0]}"
         SCHEMA="${PARTS[1]}"
     fi
-elif [[ -n $CATALOG ]]; then
-    echo "Select a schema from this list:"
-    databricks schemas list "$CATALOG" -o json | jq .[].name | sed 's!"!!g'
-    exit 1
+elif [[ -n $CATALOG && $CMD = $CMD_LIST ]]; then
+    echo "## schemas"
+    databricks schemas list "$CATALOG" -o json | jq .[].name | sed 's!"!!g' | sort
+    exit 0
 fi
 
-if [[ -z $CATALOG ]]
+if [[ -z $CATALOG && $CMD = $CMD_LIST ]]
 then
-    echo "Select a catalog from this list:"
-    databricks catalogs list -o json | jq .[].name | sed 's!"!!g'
-    exit 1
+    echo "## catalogs"
+    databricks catalogs list -o json | jq .[].name | sed 's!"!!g' | sort
+    exit 0
 fi
 
 process_table () {
